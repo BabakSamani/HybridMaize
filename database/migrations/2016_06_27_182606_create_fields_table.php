@@ -19,8 +19,9 @@ class CreateFieldsTable extends Migration {
 			$table->string('AWDN_id', 7)->nullable()->default(NULL);
 			$table->integer('rain_gauge_number', false, true)->length(11)->default(NULL);
 			$table->string('field_name', 30)->nullable()->default(NULL);
-			$table->string('lat_long', 50)->nullable()->default(NULL);
-			$table->float('wth_Stn_dist', 8, 2)->unsigned()->nullable()->default(0);
+			$table->string('lat_long_elev', 50)->nullable()->default(NULL);
+			$table->float('area', 12, 3)->unsigned()->nullable()->default(0);
+			$table->float('wth_Stn_dist', 8, 3)->unsigned()->nullable()->default(0);
 			$table->date('field_creation_date')->nullable()->default(NULL);
 			$table->string('current_crop', 5)->nullable()->default('S/C');
 			$table->tinyInteger('field_status')->nullable()->default(1);
