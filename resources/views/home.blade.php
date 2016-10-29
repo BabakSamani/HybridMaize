@@ -1,8 +1,6 @@
 @extends('app')
 
 @section('content')
-    <script async defer
-            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC-2uqBhq1_iCmt0OFu7eLEbZlHIVl2Ckk&libraries=drawing,geometry,places&callback=initMap"></script>
     <style>
         .controls {
             margin-top: 10px;
@@ -78,19 +76,27 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">Home</div>
                     <div class="panel-body">
-                        <form class="form-horizontal" role="form" method="POST" action="">
+                        {!! Form::open(array('url'=>'/Field/add', 'files'=>true)) !!}
+                            <div class="form-group">
+                                <div class="col-xs-4">
+                                    <label for="">Enter a name for your field:</label>
+                                    <input type="text" class="form-control input-sm" name="field_name" id="field_name">
+                                </div>
+                            </div>
+
                             <p>Please select a crop:</p>
                             <div class="radio-inline">
-                                <label><input type="radio" name="optRadio">Corn</label>
+                                <label><input type="radio" name="current_crop" value="Corn">Corn</label>
                             </div>
                             <div class="radio-inline">
-                                <label><input type="radio" name="optRadio">Soybean</label>
+                                <label><input type="radio" name="current_crop" value="Soybean">Soybean</label>
                             </div>
-                            {!! Form::open(array('url'=>'', 'files'=>true)) !!}
-                            <br>
+
+                            <br><br>
                             <input id="pac-input" class="controls" type="text" placeholder="Search Box">
                             <div id="map-canvas" style="width:100%; height: 500px;"></div>
-                            <script>
+                        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC-2uqBhq1_iCmt0OFu7eLEbZlHIVl2Ckk&libraries=drawing,geometry,places&callback=initMap" async defer></script>
+                        <script>
                                 function getCenterOfShape(coordinates) {
 
                                     function Point(x, y) {
@@ -254,66 +260,33 @@
                                         elevations[0] = elevation.toString();
                                     });
                                     for (var i = 0; i < elevations.length; i++) {
-                                        console.log(elevations[i]); // Print on the log
+                                        console.log(elevations[i]); // Print in the console
                                     }
                                     return elevations;
                                 }
 */
                                 function Get_Elevation_Elevator(location) {
-                                    console.log('The Get_Elevation_Elevator function is being called!');
+                                    console.log('Location: ', location);
                                     var elevator = new google.maps.ElevationService;
-                                    var elevations = new Array(1);
+                                    var elevation;
                                     // Initiate the location request
                                     if (elevator) {
                                         elevator.getElevationForLocations({'locations': [location]}, function (results, status) {
                                             if (status === 'OK') {
-                                                elevations[0] = results[0].elevation.toString();
+                                                elevation = results[0].elevation.toString();
                                             }
                                             else {
-                                                elevations[0] = '0';
+                                                elevation = '0';
                                                 console.log("Elevator is failed: " + status);
                                             }
-                                            console.log('Elevation at ', location.toString(), ' is ', elevations[0]); // prints out the elevation here
+                                            $('#alt').val(elevation);
+                                            console.log('Elevation at ', location.toString(), ' is ', elevation); // prints out the elevation here
 
                                         });
                                     }
-                                    return elevations[0]; // Here returns nothing for the elevation
-                                }
-/*
-                                function Get_Eleveation_Geocoder(location) {
-                                    console.log('The Get_Eleveation_Geocoder function is being called!');
-                                    var geocoder = new google.maps.Geocoder();
-                                    if (geocoder) {
-                                        geocoder.geocode({'location': location}, function (results, status) {
-                                            if (status == google.maps.GeocoderStatus.OK) {
-                                                console.log(results[0]);
-                                            }
-                                            else {
-                                                console.log("Geocoding failed: " + status);
-                                            }
-                                        });
-                                    }
+                                    return elevation; // Here returns nothing for the elevation
                                 }
 
-                                function Get_Elevation_Ajax(lat, lng) {
-                                    console.log('The Get_Elevation_Ajax function is being called!');
-                                    var elevation;
-                                    var json;
-                                    $.ajax({
-                                        url: 'https://maps.googleapis.com/maps/api/elevation/json?locations=' + lat + ',' + lng + '&key=AIzaSyC-2uqBhq1_iCmt0OFu7eLEbZlHIVl2Ckk',
-                                        dataType: 'json',
-                                        json: 'callback',
-                                        method: 'GET',
-                                        success: function (results) {
-                                            //												elevation = results[0].elevation;
-                                            //												console.log(results[0].elevation);
-                                            var elev = results['results']['elevation'];
-                                            console.log('latitude: ' + elev);
-                                        }
-                                    });
-                                    //										return elevation;
-                                }
-*/
                                 /* This function converts 'X' degrees to radians.*/
                                 function toRadians(x) {
                                     return (x * Math.PI / 180);
@@ -543,7 +516,7 @@
                                         strokeWeight: 3,
                                         fillOpacity: 0.55,
                                         clickable: true,
-                                        draggable: true,
+                                        draggable: false,       // Prevents dragging and moving the shape
                                         editable: true,
                                         geodesic: true,
                                         zIndex: 1
@@ -632,6 +605,7 @@
                                                 var circle = event.overlay;
                                                 var center_lat = circle.getCenter().lat();
                                                 var center_lng = circle.getCenter().lng();
+                                                Get_Elevation_Elevator(circle.getCenter());
                                                 var radius = circle.getRadius();
                                                 // Calculate the area of the circle
                                                 area = radius * radius * Math.PI;
@@ -640,7 +614,7 @@
                                                 var result = Circle_Coordinate_Generator(center_lat, center_lng, radius);
                                                 for (var k = 0; k < result.length; k++) {
                                                     var point = result[k];
-                                                    coordinates.push({"x": point[0], "y": point[1]});
+                                                    coordinates.push({"x": point[1], "y": point[0]});
                                                 }
                                             }
                                             if (event.type == 'polyline') {
@@ -651,7 +625,7 @@
                                                 // Calculate the area of the polyline
                                                 area = google.maps.geometry.spherical.computeArea(polyline.getPath());
                                                 console.log('Polyline area: ', area);
-                                                for (var i = 0; i < len; i++) {
+                                                for (i = 0; i < len; i++) {
                                                     Get_Elevation_Elevator(polyline.getPath().getAt(i));
                                                     coordinates.push({
                                                         "x": polyline.getPath().getAt(i).lat(),
@@ -689,7 +663,7 @@
                                             coordinates.length = 0;
                                             lat = marker.position.lat().toString();
                                             lng = marker.position.lng().toString();
-                                            console.log(marker.position.lat());
+                                            console.log(marker.position);
                                             coordinates.push({"x": marker.position.lat(), "y": marker.position.lng()});
                                             Get_Elevation_Elevator(marker.position);
 
@@ -699,6 +673,11 @@
                                             setSelection(newShape);
                                         }
                                         var center = getCenterOfShape(coordinates);
+//                                        Get_Elevation_Elevator(center);
+
+                                        $('#lat').val(center.x.toString());
+                                        $('#lng').val(center.y.toString());
+                                        $('#area').val(area);
                                         console.log('Center of shape: ', center.x, center.y);
                                     });
 
@@ -716,25 +695,35 @@
                             </div>
                             <br>
                             <div class="form-group">
-                                <label for="">Lat</label>
-                                <input type="text" class="form-control input-sm" name="lat" id="lat">
-                            </div>
+                                <div class="col-xs-3">
+                                    <label for="">Latitude of center of field:</label>
+                                    <input type="text" class="form-control input-sm" name="latitude" id="lat">
+                                </div>
 
-                            <div class="form-group">
-                                <label for="">Lng</label>
-                                <input type="text" class="form-control input-sm" name="lng" id="lng">
-                            </div>
+                                <div class="col-xs-3">
+                                    <label for="">Longitude of center of field:</label>
+                                    <input type="text" class="form-control input-sm" name="longitude" id="lng">
+                                </div>
 
-                            <div class="form-group">
-                                <div class="col-md-6 col-md-offset-4">
-                                    <button type="submit" class="btn btn-primary">
-                                        Proceed
-                                    </button>
+                                <div class="col-xs-3">
+                                    <label for="">Altitude of center of field:</label>
+                                    <input type="text" class="form-control input-sm" name="altitude" id="alt">
+                                </div>
+
+                                <div class="col-xs-3">
+                                    <label for="">Field's area:</label>
+                                    <input type="text" class="form-control input-sm" name="area" id="area">
                                 </div>
                             </div>
-                        </form>
+
+                            <div class="col-md-5 col-md-offset-10">
+                                <button type="submit" class="btn btn-primary active">
+                                    Proceed
+                                </button>
+                            </div>
+
+                        {!! Form::close() !!}
                     </div>
-                    {!! Form::close() !!}
                 </div>
             </div>
         </div>

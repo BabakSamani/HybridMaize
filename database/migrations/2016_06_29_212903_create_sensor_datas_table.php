@@ -39,7 +39,7 @@ class CreateSensorDatasTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('sensor_datas');
+		Schema::drop('sensor_data');
 	}
 
 }

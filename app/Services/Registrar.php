@@ -33,11 +33,11 @@ class Registrar implements RegistrarContract {
 	{
 		$currentTime = Carbon::now();
 		return User::create([
-			'firstName' => $data['firstName'],
-			'lastName' => $data['lastName'],
+			'first_name' => $data['firstName'],
+			'last_name' => $data['lastName'],
 			'email' => $data['email'],
 			'password' => bcrypt($data['password']),
-			'accCreationDate' => $currentTime,
+			'acc_creation_date' => $currentTime,
 		]);
 	}
 

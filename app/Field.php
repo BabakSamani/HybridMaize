@@ -17,10 +17,14 @@ class Field extends Model {
      * @var array
      */
     protected $fillable = [
-        'fieldName',
-        'latLong',
-        'fieldCreationDate',
-        'currentCrop'
-    ];
 
+        'field_name',
+        'latitude',
+        'longitude',
+        'altitude',
+        'area',
+        'current_crop',
+        'field_creation_date',
+        'current_crop'
+    ];
 }

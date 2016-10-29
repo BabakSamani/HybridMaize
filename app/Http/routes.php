@@ -1,5 +1,4 @@
 <?php
-
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -17,7 +16,13 @@ Route::get('home', 'HomeController@index');
 Route::get('Pages/about', 'PagesController@about');
 
 Route::get('fields', 'FieldsController@getAllFields');
+// Route for adding fields --------------------------
+Route::post('/Field/add', function(){
+	\App\Field::create(Input::all());
+	var_dump('Field is created!');
+});
 
+// --------------------------------------------------
 Route::controllers([
 	'auth' => 'Auth\AuthController',
 	'password' => 'Auth\PasswordController',
