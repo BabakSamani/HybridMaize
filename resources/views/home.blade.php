@@ -95,7 +95,7 @@
                             <br><br>
                             <input id="pac-input" class="controls" type="text" placeholder="Search Box">
                             <div id="map-canvas" style="width:100%; height: 500px;"></div>
-                        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC-2uqBhq1_iCmt0OFu7eLEbZlHIVl2Ckk&libraries=drawing,geometry,places&callback=initMap" async defer></script>
+                        <script src="https://maps.googleapis.com/maps/api/js?key=&libraries=drawing,geometry,places&callback=initMap" async defer></script>
                         <script>
                                 function getCenterOfShape(coordinates) {
 
